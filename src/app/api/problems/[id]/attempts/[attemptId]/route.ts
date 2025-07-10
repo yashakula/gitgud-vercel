@@ -5,10 +5,11 @@ import { eq, and } from "drizzle-orm";
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string; attemptId: string } }
+  { params }: { params: Promise<{ id: string; attemptId: string }> }
 ) {
   try {
     const { userId } = await auth();
+    const resolvedParams = await params;
     
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -18,7 +19,7 @@ export async function DELETE(
     const problem = await db
       .select()
       .from(problems)
-      .where(and(eq(problems.id, params.id), eq(problems.userId, userId)))
+      .where(and(eq(problems.id, resolvedParams.id), eq(problems.userId, userId)))
       .limit(1);
 
     if (problem.length === 0) {
@@ -30,8 +31,8 @@ export async function DELETE(
       .select()
       .from(attempts)
       .where(and(
-        eq(attempts.id, params.attemptId),
-        eq(attempts.problemId, params.id),
+        eq(attempts.id, resolvedParams.attemptId),
+        eq(attempts.problemId, resolvedParams.id),
         eq(attempts.userId, userId)
       ))
       .limit(1);
@@ -43,7 +44,7 @@ export async function DELETE(
     // Delete the attempt
     await db
       .delete(attempts)
-      .where(eq(attempts.id, params.attemptId));
+      .where(eq(attempts.id, resolvedParams.attemptId));
 
     return NextResponse.json({ message: "Attempt deleted successfully" });
   } catch (error) {

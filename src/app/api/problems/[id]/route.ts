@@ -5,10 +5,11 @@ import { eq, and } from "drizzle-orm";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
+    const resolvedParams = await params;
     
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -17,7 +18,7 @@ export async function GET(
     const problem = await db
       .select()
       .from(problems)
-      .where(and(eq(problems.id, params.id), eq(problems.userId, userId)))
+      .where(and(eq(problems.id, resolvedParams.id), eq(problems.userId, userId)))
       .limit(1);
 
     if (problem.length === 0) {
@@ -33,10 +34,11 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
+    const resolvedParams = await params;
     
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -66,7 +68,7 @@ export async function PUT(
         tags: processedTags,
         updatedAt: new Date(),
       })
-      .where(and(eq(problems.id, params.id), eq(problems.userId, userId)))
+      .where(and(eq(problems.id, resolvedParams.id), eq(problems.userId, userId)))
       .returning();
 
     if (!updatedProblem) {
@@ -82,10 +84,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
+    const resolvedParams = await params;
     
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -93,7 +96,7 @@ export async function DELETE(
 
     const deletedProblem = await db
       .delete(problems)
-      .where(and(eq(problems.id, params.id), eq(problems.userId, userId)))
+      .where(and(eq(problems.id, resolvedParams.id), eq(problems.userId, userId)))
       .returning();
 
     if (deletedProblem.length === 0) {

@@ -185,7 +185,7 @@ export default function ProblemsPage() {
                             <ExternalLink className="h-4 w-4" />
                           </a>
                         )}
-                        <Badge variant={getDifficultyVariant(problem.difficulty) as any}>
+                        <Badge variant={getDifficultyVariant(problem.difficulty) as "default" | "secondary" | "destructive" | "outline"}>
                           {problem.difficulty}
                         </Badge>
                       </div>

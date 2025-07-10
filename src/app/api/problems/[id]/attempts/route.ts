@@ -5,10 +5,11 @@ import { eq, and, desc } from "drizzle-orm";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
+    const resolvedParams = await params;
     
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -18,7 +19,7 @@ export async function GET(
     const problem = await db
       .select()
       .from(problems)
-      .where(and(eq(problems.id, params.id), eq(problems.userId, userId)))
+      .where(and(eq(problems.id, resolvedParams.id), eq(problems.userId, userId)))
       .limit(1);
 
     if (problem.length === 0) {
@@ -29,7 +30,7 @@ export async function GET(
     const problemAttempts = await db
       .select()
       .from(attempts)
-      .where(eq(attempts.problemId, params.id))
+      .where(eq(attempts.problemId, resolvedParams.id))
       .orderBy(desc(attempts.createdAt));
 
     return NextResponse.json(problemAttempts);
@@ -41,10 +42,11 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
+    const resolvedParams = await params;
     
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -54,7 +56,7 @@ export async function POST(
     const problem = await db
       .select()
       .from(problems)
-      .where(and(eq(problems.id, params.id), eq(problems.userId, userId)))
+      .where(and(eq(problems.id, resolvedParams.id), eq(problems.userId, userId)))
       .limit(1);
 
     if (problem.length === 0) {
@@ -73,7 +75,7 @@ export async function POST(
     const [newAttempt] = await db
       .insert(attempts)
       .values({
-        problemId: params.id,
+        problemId: resolvedParams.id,
         userId,
         status,
         timeTaken: timeTaken || null,

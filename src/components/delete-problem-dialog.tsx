@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -37,13 +37,7 @@ export function DeleteProblemDialog({
   const [attempts, setAttempts] = useState<Attempt[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (open) {
-      fetchAttempts();
-    }
-  }, [open, problemId]);
-
-  const fetchAttempts = async () => {
+  const fetchAttempts = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch(`/api/problems/${problemId}/attempts`);
@@ -56,7 +50,13 @@ export function DeleteProblemDialog({
     } finally {
       setLoading(false);
     }
-  };
+  }, [problemId]);
+
+  useEffect(() => {
+    if (open) {
+      fetchAttempts();
+    }
+  }, [open, fetchAttempts]);
 
   const handleConfirmDelete = () => {
     setOpen(false);
