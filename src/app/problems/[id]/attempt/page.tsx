@@ -242,18 +242,44 @@ export default function RecordAttemptPage() {
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <Label htmlFor="notes">Notes</Label>
-                <Textarea
-                  id="notes"
-                  placeholder="Describe your approach, what worked, what didn't, lessons learned, etc."
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="min-h-[150px]"
-                />
-                <p className="text-sm text-muted-foreground">
-                  Document your thought process, challenges faced, and any insights gained
-                </p>
+                
+                {/* Reflection Prompts */}
+                <div className="space-y-3">
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Track your progress:</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                      <p className="text-sm text-blue-800 dark:text-blue-200">• What worked well in your solution?</p>
+                    </div>
+                    <div className="bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-lg p-3">
+                      <p className="text-sm text-orange-800 dark:text-orange-200">• What was difficult or unexpected?</p>
+                    </div>
+                    <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-3">
+                      <p className="text-sm text-green-800 dark:text-green-200">• Time & space complexity</p>
+                    </div>
+                    <div className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
+                      <p className="text-sm text-purple-800 dark:text-purple-200">• Key insights or patterns learned</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Textarea
+                    id="notes"
+                    placeholder="Describe your approach, what worked, what didn't, lessons learned, etc."
+                    value={formData.notes}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    className="min-h-[150px]"
+                    maxLength={500}
+                  />
+                  <div className="flex justify-between text-sm text-muted-foreground">
+                    <span>Document your thought process, challenges faced, and any insights gained</span>
+                    <span className={formData.notes.length > 450 ? "text-orange-600 dark:text-orange-400" : ""}>
+                      {formData.notes.length}/500
+                    </span>
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-2">
