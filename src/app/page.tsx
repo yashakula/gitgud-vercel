@@ -1,5 +1,5 @@
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
-import { Plus, BookOpen, Trophy, Clock, TrendingUp, Code, Target, BarChart3, Zap, CheckCircle2 } from "lucide-react";
+import { Plus, BookOpen, Trophy, Clock, TrendingUp, Code, Zap } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,7 +36,7 @@ export default function Home() {
             </div>
             <div className="max-w-[800px] mx-auto space-y-6">
               <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-                Turn your coding practice into real progress. Our platform helps you track your practice sessions so you can learn from your mistakes. Because the difference between developers who land their dream jobs and those who don't isn't just talent—it's the discipline to learn from every mistake, understand every solution, and never stumble on the same problem twice. It's time to just GitGud.
+                Turn your coding practice into real progress. Our platform helps you track your practice sessions so you can learn from your mistakes. Because the difference between developers who land their dream jobs and those who don&apos;t isn&apos;t just talent—it&apos;s the discipline to learn from every mistake, understand every solution, and never stumble on the same problem twice. It&apos;s time to just GitGud.
               </p>
               <SignInButton>
                 <Button size="lg" className="text-lg px-8 py-6">
