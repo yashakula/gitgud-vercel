@@ -1,9 +1,10 @@
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
-import { Plus, BookOpen, Trophy, Clock, TrendingUp, Code, Zap } from "lucide-react";
+import { Plus, BookOpen, Trophy, Clock, Code, Zap } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AddProblemDialog } from "@/components/add-problem-dialog";
+import { DashboardStats } from "@/components/dashboard-stats";
 
 export default function Home() {
   return (
@@ -85,59 +86,7 @@ export default function Home() {
         </div>
 
         {/* Stats Overview */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="border shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Problems</CardTitle>
-              <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
-                <BookOpen className="h-5 w-5 text-muted-foreground" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">Problems in your collection</p>
-            </CardContent>
-          </Card>
-          
-          <Card className="border shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Solved</CardTitle>
-              <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
-                <Trophy className="h-5 w-5 text-muted-foreground" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">Successfully completed</p>
-            </CardContent>
-          </Card>
-          
-          <Card className="border shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">In Progress</CardTitle>
-              <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
-                <Clock className="h-5 w-5 text-muted-foreground" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">Currently working on</p>
-            </CardContent>
-          </Card>
-          
-          <Card className="border shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Success Rate</CardTitle>
-              <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
-                <TrendingUp className="h-5 w-5 text-muted-foreground" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">0%</div>
-              <p className="text-xs text-muted-foreground">Overall success rate</p>
-            </CardContent>
-          </Card>
-        </div>
+        <DashboardStats />
 
         {/* Quick Actions */}
         <div className="grid gap-6 md:grid-cols-2">

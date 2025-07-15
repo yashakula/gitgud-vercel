@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { CodeEditor } from "@/components/code-editor";
 import {
   Select,
   SelectContent,
@@ -233,17 +234,17 @@ export default function RecordAttemptPage() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="easy">
-                          <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                          <Badge variant="secondary">
                             Easy
                           </Badge>
                         </SelectItem>
                         <SelectItem value="medium">
-                          <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                          <Badge variant="secondary">
                             Medium
                           </Badge>
                         </SelectItem>
                         <SelectItem value="hard">
-                          <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                          <Badge variant="secondary">
                             Hard
                           </Badge>
                         </SelectItem>
@@ -324,19 +325,19 @@ export default function RecordAttemptPage() {
                 
                 {/* Reflection Prompts */}
                 <div className="space-y-3">
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Track your progress:</p>
+                  <p className="text-sm font-medium text-muted-foreground">Track your progress:</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-                      <p className="text-sm text-blue-800 dark:text-blue-200">• What worked well in your solution?</p>
+                    <div className="bg-muted/50 border rounded-lg p-3">
+                      <p className="text-sm text-muted-foreground">• What worked well in your solution?</p>
                     </div>
-                    <div className="bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-lg p-3">
-                      <p className="text-sm text-orange-800 dark:text-orange-200">• What was difficult or unexpected?</p>
+                    <div className="bg-muted/50 border rounded-lg p-3">
+                      <p className="text-sm text-muted-foreground">• What was difficult or unexpected?</p>
                     </div>
-                    <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-3">
-                      <p className="text-sm text-green-800 dark:text-green-200">• Time & space complexity</p>
+                    <div className="bg-muted/50 border rounded-lg p-3">
+                      <p className="text-sm text-muted-foreground">• Time & space complexity</p>
                     </div>
-                    <div className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
-                      <p className="text-sm text-purple-800 dark:text-purple-200">• Key insights or patterns learned</p>
+                    <div className="bg-muted/50 border rounded-lg p-3">
+                      <p className="text-sm text-muted-foreground">• Key insights or patterns learned</p>
                     </div>
                   </div>
                 </div>
@@ -361,12 +362,12 @@ export default function RecordAttemptPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="solutionCode">Solution Code (Optional)</Label>
-                <Textarea
-                  id="solutionCode"
-                  placeholder="Paste your code solution here..."
+                <CodeEditor
                   value={formData.solutionCode}
-                  onChange={(e) => setFormData({ ...formData, solutionCode: e.target.value })}
-                  className="min-h-[200px] font-mono text-sm"
+                  onChange={(value) => setFormData({ ...formData, solutionCode: value })}
+                  language="python"
+                  placeholder="# Paste your Python solution here..."
+                  height="300px"
                 />
                 <p className="text-sm text-muted-foreground">
                   Include your working solution, partial attempt, or pseudocode
