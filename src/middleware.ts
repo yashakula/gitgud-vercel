@@ -1,6 +1,12 @@
 import { clerkMiddleware } from "@clerk/nextjs/server";
+import { middlewareLogger } from "@/lib/logger";
 
-export default clerkMiddleware();
+export default clerkMiddleware((auth, req) => {
+  middlewareLogger.debug("Request received", { 
+    method: req.method, 
+    pathname: req.nextUrl.pathname
+  });
+});
 
 export const config = {
   matcher: [

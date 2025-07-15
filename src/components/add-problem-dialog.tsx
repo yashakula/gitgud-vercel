@@ -30,12 +30,15 @@ export function AddProblemDialog({ children }: AddProblemDialogProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("AddProblemDialog - Form submission started", { url: formData.url });
     setIsSubmitting(true);
     setUrlError("");
 
     try {
       const normalizedUrl = normalizeUrl(formData.url);
       const title = deriveTitleFromUrl(normalizedUrl);
+      console.log("AddProblemDialog - URL normalized and title derived", { normalizedUrl, title });
+      
       const response = await fetch("/api/problems", {
         method: "POST",
         headers: {
@@ -49,6 +52,9 @@ export function AddProblemDialog({ children }: AddProblemDialogProps) {
 
       if (response.ok) {
         const newProblem = await response.json();
+        console.log("AddProblemDialog - Problem created successfully, redirecting to attempt page", { 
+          problemId: newProblem.id 
+        });
         setOpen(false);
         setFormData({
           url: "",
@@ -56,8 +62,15 @@ export function AddProblemDialog({ children }: AddProblemDialogProps) {
         router.push(`/problems/${newProblem.id}/attempt`);
       } else {
         const error = await response.json();
+        console.log("AddProblemDialog - Failed to create problem", { 
+          status: response.status, 
+          error: error.error 
+        });
         if (response.status === 409 && error.existingProblem) {
           // Problem already exists, show error but offer to go to existing problem
+          console.log("AddProblemDialog - Duplicate problem detected", { 
+            existingProblemId: error.existingProblem.id 
+          });
           setUrlError(`You already have a problem with this URL. Would you like to record a new attempt instead?`);
         } else {
           setUrlError(error.error || "An error occurred while adding the problem.");
@@ -68,10 +81,12 @@ export function AddProblemDialog({ children }: AddProblemDialogProps) {
       setUrlError("An error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
+      console.log("AddProblemDialog - Form submission completed");
     }
   };
 
   const handleGoToExisting = async () => {
+    console.log("AddProblemDialog - Navigating to existing problem", { url: formData.url });
     try {
       const normalizedUrl = normalizeUrl(formData.url);
       const response = await fetch("/api/problems", {
@@ -88,6 +103,9 @@ export function AddProblemDialog({ children }: AddProblemDialogProps) {
       if (response.status === 409) {
         const error = await response.json();
         if (error.existingProblem) {
+          console.log("AddProblemDialog - Redirecting to existing problem", { 
+            problemId: error.existingProblem.id 
+          });
           setOpen(false);
           setFormData({
             url: "",

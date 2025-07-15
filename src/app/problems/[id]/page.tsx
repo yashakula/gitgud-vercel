@@ -40,12 +40,20 @@ export default function ProblemDetailPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("ProblemDetailPage - Component mounted", { problemId: params.id });
     const fetchProblem = async () => {
+      console.log("ProblemDetailPage - Fetching problem details", { problemId: params.id });
       try {
         const response = await fetch(`/api/problems/${params.id}`);
         if (response.ok) {
           const data = await response.json();
+          console.log("ProblemDetailPage - Problem details fetched successfully", { problemId: params.id });
           setProblem(data);
+        } else {
+          console.log("ProblemDetailPage - Failed to fetch problem details", { 
+            problemId: params.id, 
+            status: response.status 
+          });
         }
       } catch (error) {
         console.error("Error fetching problem:", error);
@@ -53,16 +61,27 @@ export default function ProblemDetailPage() {
     };
 
     const fetchAttempts = async () => {
+      console.log("ProblemDetailPage - Fetching attempts", { problemId: params.id });
       try {
         const response = await fetch(`/api/problems/${params.id}/attempts`);
         if (response.ok) {
           const data = await response.json();
+          console.log("ProblemDetailPage - Attempts fetched successfully", { 
+            problemId: params.id, 
+            attemptCount: data.length 
+          });
           setAttempts(data);
+        } else {
+          console.log("ProblemDetailPage - Failed to fetch attempts", { 
+            problemId: params.id, 
+            status: response.status 
+          });
         }
       } catch (error) {
         console.error("Error fetching attempts:", error);
       } finally {
         setLoading(false);
+        console.log("ProblemDetailPage - Loading state set to false");
       }
     };
 
@@ -71,22 +90,30 @@ export default function ProblemDetailPage() {
   }, [params.id]);
 
   const handleDeleteAttempt = async (attemptId: string) => {
+    console.log("ProblemDetailPage - Delete attempt requested", { problemId: params.id, attemptId });
     if (!confirm("Are you sure you want to delete this attempt? This action cannot be undone.")) {
+      console.log("ProblemDetailPage - Delete attempt cancelled by user");
       return;
     }
 
+    console.log("ProblemDetailPage - Deleting attempt", { problemId: params.id, attemptId });
     try {
       const response = await fetch(`/api/problems/${params.id}/attempts/${attemptId}`, {
         method: "DELETE",
       });
 
       if (response.ok) {
+        console.log("ProblemDetailPage - Attempt deleted successfully", { problemId: params.id, attemptId });
         // Refetch attempts after deleting
         const fetchAttempts = async () => {
           try {
             const response = await fetch(`/api/problems/${params.id}/attempts`);
             if (response.ok) {
               const data = await response.json();
+              console.log("ProblemDetailPage - Attempts refetched after deletion", { 
+                problemId: params.id, 
+                attemptCount: data.length 
+              });
               setAttempts(data);
             }
           } catch (error) {
@@ -96,6 +123,11 @@ export default function ProblemDetailPage() {
         fetchAttempts();
       } else {
         const error = await response.json();
+        console.log("ProblemDetailPage - Failed to delete attempt", { 
+          problemId: params.id, 
+          attemptId, 
+          error: error.error 
+        });
         alert(`Error: ${error.error}`);
       }
     } catch (error) {
@@ -105,19 +137,27 @@ export default function ProblemDetailPage() {
   };
 
   const handleDeleteProblem = async () => {
+    console.log("ProblemDetailPage - Delete problem requested", { problemId: params.id });
     if (!confirm("Are you sure you want to delete this problem? This will also delete all attempts. This action cannot be undone.")) {
+      console.log("ProblemDetailPage - Delete problem cancelled by user");
       return;
     }
 
+    console.log("ProblemDetailPage - Deleting problem", { problemId: params.id });
     try {
       const response = await fetch(`/api/problems/${params.id}`, {
         method: "DELETE",
       });
 
       if (response.ok) {
+        console.log("ProblemDetailPage - Problem deleted successfully, redirecting to problems list", { problemId: params.id });
         router.push("/problems");
       } else {
         const error = await response.json();
+        console.log("ProblemDetailPage - Failed to delete problem", { 
+          problemId: params.id, 
+          error: error.error 
+        });
         alert(`Error: ${error.error}`);
       }
     } catch (error) {

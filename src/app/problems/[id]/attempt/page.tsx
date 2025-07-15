@@ -36,6 +36,7 @@ export default function RecordAttemptPage() {
   const [problem, setProblem] = useState<Problem | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUpdatingDifficulty, setIsUpdatingDifficulty] = useState(false);
   const [formData, setFormData] = useState({
     status: "partial" as "solved" | "partial" | "failed",
     timeTaken: "",
@@ -44,25 +45,76 @@ export default function RecordAttemptPage() {
   });
 
   useEffect(() => {
+    console.log("RecordAttemptPage - Component mounted", { problemId: params.id });
     const fetchProblem = async () => {
+      console.log("RecordAttemptPage - Fetching problem details", { problemId: params.id });
       try {
         const response = await fetch(`/api/problems/${params.id}`);
         if (response.ok) {
           const data = await response.json();
+          console.log("RecordAttemptPage - Problem details fetched successfully", { problemId: params.id });
           setProblem(data);
+        } else {
+          console.log("RecordAttemptPage - Failed to fetch problem details", { 
+            problemId: params.id, 
+            status: response.status 
+          });
         }
       } catch (error) {
         console.error("Error fetching problem:", error);
       } finally {
         setLoading(false);
+        console.log("RecordAttemptPage - Loading state set to false");
       }
     };
 
     fetchProblem();
   }, [params.id]);
 
+  const handleDifficultyChange = async (newDifficulty: "easy" | "medium" | "hard") => {
+    if (!problem) return;
+    
+    setIsUpdatingDifficulty(true);
+    try {
+      const response = await fetch(`/api/problems/${params.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: problem.title,
+          description: problem.description,
+          url: problem.url,
+          platform: problem.platform,
+          difficulty: newDifficulty,
+          tags: problem.tags?.join(", ") || "",
+        }),
+      });
+
+      if (response.ok) {
+        const updatedProblem = await response.json();
+        setProblem(updatedProblem);
+      } else {
+        const error = await response.json();
+        alert(`Error updating difficulty: ${error.error}`);
+      }
+    } catch (error) {
+      console.error("Error updating difficulty:", error);
+      alert("An error occurred while updating difficulty. Please try again.");
+    } finally {
+      setIsUpdatingDifficulty(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("RecordAttemptPage - Attempt submission started", { 
+      problemId: params.id, 
+      status: formData.status,
+      hasTimeTaken: !!formData.timeTaken,
+      hasNotes: !!formData.notes,
+      hasSolutionCode: !!formData.solutionCode
+    });
     setIsSubmitting(true);
 
     try {
@@ -80,9 +132,16 @@ export default function RecordAttemptPage() {
       });
 
       if (response.ok) {
+        console.log("RecordAttemptPage - Attempt recorded successfully, redirecting to problem details", { 
+          problemId: params.id 
+        });
         router.push(`/problems/${params.id}`);
       } else {
         const error = await response.json();
+        console.log("RecordAttemptPage - Failed to record attempt", { 
+          problemId: params.id, 
+          error: error.error 
+        });
         alert(`Error: ${error.error}`);
       }
     } catch (error) {
@@ -90,21 +149,10 @@ export default function RecordAttemptPage() {
       alert("An error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
+      console.log("RecordAttemptPage - Attempt submission completed");
     }
   };
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case "easy":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
-      case "medium":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
-      case "hard":
-        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
-    }
-  };
 
   if (loading) {
     return (
@@ -172,10 +220,39 @@ export default function RecordAttemptPage() {
             <div className="flex items-start justify-between">
               <div className="space-y-2">
                 <CardTitle className="text-xl">{problem.title}</CardTitle>
-                <div className="flex items-center gap-2">
-                  <Badge className={getDifficultyColor(problem.difficulty)}>
-                    {problem.difficulty.charAt(0).toUpperCase() + problem.difficulty.slice(1)}
-                  </Badge>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">Difficulty:</span>
+                    <Select
+                      value={problem.difficulty}
+                      onValueChange={handleDifficultyChange}
+                      disabled={isUpdatingDifficulty}
+                    >
+                      <SelectTrigger className="w-auto h-8 min-w-[100px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="easy">
+                          <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                            Easy
+                          </Badge>
+                        </SelectItem>
+                        <SelectItem value="medium">
+                          <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                            Medium
+                          </Badge>
+                        </SelectItem>
+                        <SelectItem value="hard">
+                          <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                            Hard
+                          </Badge>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {isUpdatingDifficulty && (
+                      <span className="text-xs text-muted-foreground">Updating...</span>
+                    )}
+                  </div>
                 </div>
               </div>
               {problem.url && (

@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { AddProblemDialog } from "@/components/add-problem-dialog";
 import { DeleteProblemDialog } from "@/components/delete-problem-dialog";
+import { uiLogger } from "@/lib/logger";
 
 type Problem = {
   id: string;
@@ -28,34 +29,43 @@ export default function ProblemsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    uiLogger.debug("ProblemsPage component mounted, fetching problems");
     fetchProblems();
   }, []);
 
   const fetchProblems = async () => {
+    uiLogger.debug("Starting to fetch problems");
     try {
       const response = await fetch("/api/problems");
       if (response.ok) {
         const data = await response.json();
+        uiLogger.info("Problems fetched successfully", { count: data.length });
         setProblems(data);
+      } else {
+        uiLogger.warn("Failed to fetch problems", { status: response.status });
       }
     } catch (error) {
-      console.error("Error fetching problems:", error);
+      uiLogger.error("Error fetching problems", { error: error instanceof Error ? error.message : error });
     } finally {
       setLoading(false);
+      uiLogger.debug("Loading state set to false");
     }
   };
 
   const handleDeleteProblem = async (problemId: string) => {
+    console.log("ProblemsPage - Deleting problem", { problemId });
     try {
       const response = await fetch(`/api/problems/${problemId}`, {
         method: "DELETE",
       });
 
       if (response.ok) {
+        console.log("ProblemsPage - Problem deleted successfully", { problemId });
         // Refetch problems after deletion
         fetchProblems();
       } else {
         const error = await response.json();
+        console.log("ProblemsPage - Failed to delete problem", { problemId, error: error.error });
         alert(`Error: ${error.error}`);
       }
     } catch (error) {
